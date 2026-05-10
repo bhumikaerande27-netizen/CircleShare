@@ -1,5 +1,5 @@
-Project Topic: Peer-To-Peer Resource Hub\n
-Problem Statement Code: 013m\n
-Group Name: Quad Core\n
+Project Topic: Peer-To-Peer Resource Hub
+Problem Statement Code: 013m
+Group Name: Quad Core
 Group Members: 4
 
