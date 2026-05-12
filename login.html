@@ -116,7 +116,7 @@ auth.languageCode = 'en';
     message.className = "msg_box created";
 
     setTimeout(() => {
-        window.location.href = "dashboard.html";
+        window.location.href = "dashboard6.html";
     }, 1000);
 })
 .catch((error) => {
@@ -179,7 +179,7 @@ reset.addEventListener("click", function(event){
          const credential = GoogleAuthProvider.credentialFromResult(result);
          const user = result.user;
          console.log("Google Sign-In successful:", user);
-         window.location.href = "dashboard.html";
+         window.location.href = "dashboard6.html";
      })
      .catch((error) => {
          const errorCode = error.code;
