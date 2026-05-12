@@ -81,10 +81,17 @@ body{
 <button onclick="toggleTheme()" class="text-xl" id="themeIcon">🌙</button>
 
 <div class="flex items-center gap-3">
-<img src="https://ui-avatars.com/api/?name=Bhumika+Erande&background=8b5cf6&color=fff" class="w-10 h-10 rounded-full">
+<img
+id="navbarProfileImage"
+src=""
+class="w-10 h-10 rounded-full object-cover">
+
 <div class="hidden sm:block">
-<p class="font-semibold">Bhumika</p>
-<p class="text-xs text-slate-500"><span id="pointsDisplay">30</span> XP</p>
+<p id="navbarUserName" class="font-semibold"></p>
+
+<p class="text-xs text-slate-500">
+<span id="pointsDisplay">0</span> XP
+</p>
 </div>
 <button onclick="logoutUser()" 
 class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm">
@@ -189,14 +196,20 @@ Post Doubt
 
 <!-- PROFILE -->
 <div class="glass rounded-2xl p-6 text-center border">
-<img src="https://ui-avatars.com/api/?name=Bhumika+Erande&background=8b5cf6&color=fff" class="w-24 h-24 rounded-full mx-auto">
+<img
+id="profileImage"
+src=""
+class="w-24 h-24 rounded-full mx-auto object-cover">
 
-<h3 class="mt-4 font-bold text-xl">Bhumika Erande</h3>
-<p class="text-slate-500">2nd Year AI/ML</p>
+<h3 id="profileName"
+class="mt-4 font-bold text-xl"></h3>
+
+<p id="profileBranch"
+class="text-slate-500"></p>
 
 <div class="mt-4 bg-brand-50 dark:bg-brand-900/20 p-4 rounded-xl">
 <h4 class="font-bold">⭐ Points: <span id="points">30</span></h4>
-<p>🏆 Rank #2 Contributor</p>
+<p>🏆 Rank #1 Contributor</p>
 </div>
 </div>
 
@@ -285,9 +298,18 @@ Cancel
 
 <script>
 
-let currentUser = JSON.parse(localStorage.getItem("currentUser")) || {
-name:"Bhumika",
-points:30
+let currentUser = JSON.parse(
+localStorage.getItem("currentUser")
+) || {
+
+name:"Student",
+branch:"Year, Branch",
+
+profileImage:
+"https://ui-avatars.com/api/?name=Student&background=8b5cf6&color=fff",
+
+points:0
+
 };
 
 let resources = [];
@@ -296,6 +318,54 @@ let leaderboard = [];
 
 document.getElementById("points").innerText=currentUser.points;
 document.getElementById("pointsDisplay").innerText=currentUser.points;
+
+function renderProfile(){
+
+document.getElementById("navbarUserName")
+.innerText=currentUser.name;
+
+document.getElementById("profileName")
+.innerText=currentUser.name;
+
+document.getElementById("profileBranch")
+.innerText=currentUser.branch;
+
+document.getElementById("profileImage")
+.src=currentUser.profileImage;
+
+document.getElementById("navbarProfileImage")
+.src=currentUser.profileImage;
+
+document.getElementById("points")
+.innerText=currentUser.points;
+
+document.getElementById("pointsDisplay")
+.innerText=currentUser.points;
+
+}
+
+function openProfileModal(){
+
+document.getElementById("profileModal")
+.classList.remove("hidden");
+
+document.getElementById("editName")
+.value=currentUser.name;
+
+document.getElementById("editBranch")
+.value=currentUser.branch;
+
+document.getElementById("editImage")
+.value=currentUser.profileImage;
+
+}
+
+function closeProfileModal(){
+
+document.getElementById("profileModal")
+.classList.add("hidden");
+
+}
 
 function updatePoints(value){
 
@@ -806,6 +876,44 @@ document.getElementById("modal")
 
 }
 
+function saveProfile(){
+
+let newName =
+document.getElementById("editName").value;
+
+let newBranch =
+document.getElementById("editBranch").value;
+
+let newImage =
+document.getElementById("editImage").value;
+
+if(!newName || !newBranch || !newImage){
+
+alert("Please fill all fields");
+
+return;
+
+}
+
+currentUser.name=newName;
+
+currentUser.branch=newBranch;
+
+currentUser.profileImage=newImage;
+
+localStorage.setItem(
+"currentUser",
+JSON.stringify(currentUser)
+);
+
+renderProfile();
+
+closeProfileModal();
+
+alert("Profile Updated 🚀");
+
+}
+
 async function loadResources(){
 
 const q = query(
@@ -901,6 +1009,52 @@ window.doc = doc;
 window.increment = increment;
 
 </script>
+<!-- PROFILE MODAL -->
 
+<div id="profileModal"
+class="hidden fixed inset-0 bg-black/50
+flex items-center justify-center z-50">
+
+<div class="bg-white dark:bg-slate-900
+rounded-2xl p-8 w-full max-w-lg">
+
+<h2 class="text-2xl font-bold mb-5">
+Edit Profile
+</h2>
+
+<input
+id="editName"
+placeholder="Your Name"
+class="w-full p-3 rounded-xl border mb-4">
+
+<input
+id="editBranch"
+placeholder="Branch & Year"
+class="w-full p-3 rounded-xl border mb-4">
+
+<input
+id="editImage"
+placeholder="Profile Image URL"
+class="w-full p-3 rounded-xl border mb-4">
+
+<button
+onclick="saveProfile()"
+class="w-full bg-brand-600 text-white py-3 rounded-xl">
+
+Save Changes
+
+</button>
+
+<button
+onclick="closeProfileModal()"
+class="w-full mt-3 border py-3 rounded-xl">
+
+Cancel
+
+</button>
+
+</div>
+
+</div>
 </body>
 </html>
