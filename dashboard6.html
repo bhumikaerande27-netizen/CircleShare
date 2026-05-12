@@ -211,6 +211,17 @@ class="text-slate-500"></p>
 <h4 class="font-bold">⭐ Points: <span id="points">30</span></h4>
 <p>🏆 Rank #1 Contributor</p>
 </div>
+<button
+onclick="openProfileModal()"
+
+class="mt-5 w-full bg-brand-600
+hover:bg-brand-700
+text-white py-3 rounded-xl
+font-semibold transition-all duration-300">
+
+Edit Profile
+
+</button>
 </div>
 
 <!-- LEADERBOARD -->
@@ -316,8 +327,7 @@ let resources = [];
 let doubts = [];
 let leaderboard = [];
 
-document.getElementById("points").innerText=currentUser.points;
-document.getElementById("pointsDisplay").innerText=currentUser.points;
+renderProfile();
 
 function renderProfile(){
 
