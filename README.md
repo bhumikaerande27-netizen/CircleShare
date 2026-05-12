@@ -58,11 +58,11 @@ CircleShare is a web platform designed to eliminate the struggle of finding real
 
  # TECHNICAL IMPLEMENTATION :
 
-   FRONTEND: html,css(tailwind),javascript
+   FRONTEND: HTML, CSS(Tailwind), JavaScript
 
-   BACKEND :firebase/node.js
+   BACKEND :  Firebase/ Node.js
 
-   DATABASE : firebase
+   DATABASE : Firebase
 
    STORAGE : 
 
