@@ -351,16 +351,35 @@ ${r.type}
 ${r.fileName}
 </p>
 
-<div class="flex items-center gap-2 mt-3">
+<div class="flex items-center justify-between mt-4">
 
-<button onclick="rateResource('${r.id}',1)"
-class="bg-yellow-400 px-3 py-1 rounded-lg">
-⭐
+<div class="flex items-center gap-3">
+
+<button
+onclick="rateResource('${r.firestoreId}')"
+
+class="bg-yellow-400 hover:bg-yellow-500
+transition-all duration-300
+px-4 py-2 rounded-xl
+font-semibold shadow-md">
+
+⭐ Rate
+
 </button>
 
-<span class="font-bold">
+<div class="flex items-center gap-1">
+
+<span class="text-lg font-bold">
 ${r.rating || 0}
 </span>
+
+<span class="text-sm text-slate-500">
+Ratings
+</span>
+
+</div>
+
+</div>
 
 </div>
 
@@ -443,6 +462,7 @@ year,
 branch,
 type,
 rating:0,
+ratedBy:[],
 fileName:file.name,
 fileURL:fileURL,
 uploadedBy:currentUser.name,
@@ -596,20 +616,37 @@ loadDoubts();
 
 }
 
-async function rateResource(id,points){
+async function rateResource(firestoreId){
 
-const snapshot = await getDocs(collection(db,"resources"));
+try{
+
+const snapshot = await getDocs(
+collection(db,"resources")
+);
 
 snapshot.forEach(async(docSnap)=>{
 
+if(docSnap.id===firestoreId){
+
 let data = docSnap.data();
 
-if(data.id===id){
+let ratedUsers = data.ratedBy || [];
+
+if(ratedUsers.includes(currentUser.name)){
+
+alert("You already rated this resource ⭐");
+
+return;
+
+}
+
+ratedUsers.push(currentUser.name);
 
 await updateDoc(
-doc(db,"resources",docSnap.id),
+doc(db,"resources",firestoreId),
 {
-rating:(data.rating || 0)+points
+rating: increment(1),
+ratedBy: ratedUsers
 }
 );
 
@@ -619,12 +656,21 @@ loadResources();
 
 });
 
+}catch(err){
+
+console.log(err);
+
+alert("Rating failed");
+
+}
+
 }
 
 function updateLeaderboard(){
 
 let users = JSON.parse(
 localStorage.getItem("leaderboard")
+
 ) || [];
 
 let existing = users.find(
@@ -773,8 +819,10 @@ resources=[];
 
 snapshot.forEach((doc)=>{
 
-resources.push(doc.data());
-
+resources.push({
+firestoreId:doc.id,
+...doc.data()
+});
 });
 
 displayResources(resources);
@@ -812,7 +860,8 @@ getDocs,
 query,
 orderBy,
 updateDoc,
-doc
+doc,
+increment
 
 }
 
@@ -849,6 +898,7 @@ window.query = query;
 window.orderBy = orderBy;
 window.updateDoc = updateDoc;
 window.doc = doc;
+window.increment = increment;
 
 </script>
 
