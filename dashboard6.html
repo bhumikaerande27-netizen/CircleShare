@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircleShare Ultimate Pro</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<script>
+tailwind.config = {
+    darkMode:'class',
+    theme:{
+        extend:{
+            colors:{
+                brand:{
+                    50:'#f5f3ff',
+                    100:'#ede9fe',
+                    500:'#8b5cf6',
+                    600:'#7c3aed',
+                    700:'#6d28d9',
+                    900:'#4c1d95'
+                }
+            },
+            fontFamily:{
+                sans:['Inter','sans-serif']
+            }
+        }
+    }
+}
+</script>
+
+<style>
+body{
+    font-family:'Inter',sans-serif;
+}
+.glass{
+    backdrop-filter:blur(18px);
+    background:rgba(255,255,255,0.82);
+}
+.dark .glass{
+    background:rgba(15,23,42,0.82);
+}
+.fade-in{
+    animation:fade .45s ease;
+}
+@keyframes fade{
+    from{opacity:0;transform:translateY(15px);}
+    to{opacity:1;transform:translateY(0);}
+}
+::-webkit-scrollbar{
+    width:6px;
+}
+::-webkit-scrollbar-thumb{
+    background:#8b5cf6;
+    border-radius:20px;
+}
+</style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-all duration-300 min-h-screen">
+
+<!-- NAVBAR -->
+<nav class="sticky top-0 z-50 glass border-b border-slate-200 dark:border-slate-800">
+<div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold">C</div>
+<h1 class="font-bold text-2xl text-brand-700 dark:text-brand-400">CircleShare</h1>
+</div>
+
+<div class="hidden md:flex gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">
+<a href="#">Dashboard</a>
+<a href="#">Resources</a>
+<a href="#">Doubts</a>
+<a href="#">Leaderboard</a>
+</div>
+
+<div class="flex items-center gap-4">
+<button onclick="toggleTheme()" class="text-xl" id="themeIcon">🌙</button>
+
+<div class="flex items-center gap-3">
+<img src="https://ui-avatars.com/api/?name=Bhumika+Erande&background=8b5cf6&color=fff" class="w-10 h-10 rounded-full">
+<div class="hidden sm:block">
+<p class="font-semibold">Bhumika</p>
+<p class="text-xs text-slate-500"><span id="pointsDisplay">620</span> XP</p>
+</div>
+</div>
+</div>
+
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="max-w-7xl mx-auto px-6 py-10">
+<div class="grid md:grid-cols-2 gap-10 items-center">
+
+<div>
+<h1 class="text-5xl font-extrabold leading-tight">
+Learn, Share & <span class="text-brand-600">Grow Together</span>
+</h1>
+
+<p class="mt-5 text-lg text-slate-600 dark:text-slate-400">
+Upload notes, solve doubts, earn contribution points and become your college's top contributor.
+</p>
+
+<div class="mt-6 flex gap-4">
+<button onclick="openModal()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg">
+Upload Resource
+</button>
+
+<button class="bg-slate-200 dark:bg-slate-800 px-6 py-3 rounded-xl font-semibold">
+Explore Notes
+</button>
+</div>
+</div>
+
+<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-full max-w-sm mx-auto">
+
+</div>
+</section>
+
+<!-- MAIN -->
+<main class="max-w-7xl mx-auto px-6 pb-12">
+
+<div class="grid lg:grid-cols-3 gap-8">
+
+<!-- LEFT -->
+<div class="lg:col-span-2 space-y-6">
+
+<!-- SEARCH -->
+<div class="glass rounded-2xl p-5 border border-slate-200 dark:border-slate-800 grid md:grid-cols-3 gap-4">
+
+<input id="searchInput" onkeyup="searchResources()" placeholder="Search resources..." class="p-3 rounded-xl bg-white dark:bg-slate-900 border">
+
+<select id="filterYear" onchange="filterResources()" class="p-3 rounded-xl bg-white dark:bg-slate-900 border">
+<option>All</option>
+<option>1st Year</option>
+<option>2nd Year</option>
+<option>3rd Year</option>
+<option>4th Year</option>
+</select>
+
+<select id="filterBranch" onchange="filterResources()" class="p-3 rounded-xl bg-white dark:bg-slate-900 border">
+<option>All</option>
+<option>CSE</option>
+<option>AIML</option>
+<option>ECE</option>
+<option>MECH</option>
+</select>
+
+</div>
+
+<!-- RESOURCES -->
+<div class="glass rounded-2xl p-6 border">
+<div class="flex justify-between mb-5">
+<h2 class="font-bold text-xl">📚 Study Resources</h2>
+<span class="text-brand-600 font-semibold" id="resourceCount"></span>
+</div>
+
+<div id="resourceContainer" class="grid md:grid-cols-2 gap-4"></div>
+</div>
+
+<!-- DOUBTS -->
+<div class="glass rounded-2xl p-6 border">
+<h2 class="font-bold text-xl mb-4">❓ Doubt Section</h2>
+
+<textarea id="doubtQuestion" rows="3" placeholder="Ask your doubt..." class="w-full p-3 rounded-xl border bg-white dark:bg-slate-900"></textarea>
+
+<button onclick="postDoubt()" class="mt-4 bg-brand-600 text-white px-5 py-2 rounded-xl">
+Post Doubt
+</button>
+
+<div id="doubtContainer" class="space-y-4 mt-5"></div>
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="space-y-6">
+
+<!-- PROFILE -->
+<div class="glass rounded-2xl p-6 text-center border">
+<img src="https://ui-avatars.com/api/?name=Bhumika+Erande&background=8b5cf6&color=fff" class="w-24 h-24 rounded-full mx-auto">
+
+<h3 class="mt-4 font-bold text-xl">Bhumika Erande</h3>
+<p class="text-slate-500">3rd Year Computer Engineering</p>
+
+<div class="mt-4 bg-brand-50 dark:bg-brand-900/20 p-4 rounded-xl">
+<h4 class="font-bold">⭐ Points: <span id="points">620</span></h4>
+<p>🏆 Rank #2 Contributor</p>
+</div>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="glass rounded-2xl p-6 border">
+<h2 class="font-bold text-xl mb-4">Leaderboard 🏆</h2>
+
+<div class="space-y-3">
+<div class="flex justify-between bg-slate-100 dark:bg-slate-800 p-3 rounded-xl">
+<span>🥇 Rahul</span><span>810</span>
+</div>
+<div class="flex justify-between bg-brand-100 dark:bg-brand-900/20 p-3 rounded-xl">
+<span>🥈 Bhumika</span><span>620</span>
+</div>
+<div class="flex justify-between bg-slate-100 dark:bg-slate-800 p-3 rounded-xl">
+<span>🥉 Priya</span><span>540</span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+</main>
+
+<!-- MODAL -->
+<div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+<div class="bg-white dark:bg-slate-900 rounded-2xl p-8 w-full max-w-lg">
+
+<h2 class="text-2xl font-bold mb-5">Upload Resource</h2>
+
+<input id="resourceName" placeholder="Resource Name" class="w-full p-3 rounded-xl border mb-3">
+<input id="subject" placeholder="Subject Name" class="w-full p-3 rounded-xl border mb-3">
+
+<div class="grid grid-cols-2 gap-3 mb-3">
+<select id="year" class="p-3 rounded-xl border">
+<option>1st Year</option>
+<option>2nd Year</option>
+<option selected>3rd Year</option>
+<option>4th Year</option>
+</select>
+
+<select id="branch" class="p-3 rounded-xl border">
+<option>CSE</option>
+<option>AIML</option>
+<option>ECE</option>
+<option>MECH</option>
+</select>
+</div>
+
+<select id="type" class="w-full p-3 rounded-xl border mb-3">
+<option>Notes</option>
+<option>PYQ</option>
+<option>Reference Book</option>
+</select>
+
+<button onclick="uploadResource()" class="w-full bg-brand-600 text-white py-3 rounded-xl">
+Upload
+</button>
+
+<button onclick="closeModal()" class="w-full mt-3 border py-3 rounded-xl">
+Cancel
+</button>
+
+</div>
+</div>
+
+<script>
+
+let points = 620;
+
+let resources = [
+{name:"DBMS Notes",subject:"DBMS",year:"3rd Year",branch:"CSE",type:"Notes"},
+{name:"Machine Learning PYQ",subject:"ML",year:"3rd Year",branch:"AIML",type:"PYQ"},
+{name:"OS Reference Book",subject:"Operating System",year:"2nd Year",branch:"CSE",type:"Reference Book"}
+];
+
+function displayResources(list){
+let container=document.getElementById("resourceContainer");
+container.innerHTML="";
+document.getElementById("resourceCount").innerText=list.length+" Resources";
+
+list.forEach(r=>{
+container.innerHTML+=`
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border fade-in hover:shadow-lg transition">
+<h3 class="font-bold text-lg">${r.name}</h3>
+<p class="text-slate-500">${r.subject}</p>
+<p class="text-sm mt-1">${r.year} • ${r.branch}</p>
+<span class="inline-block mt-2 px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-sm">${r.type}</span>
+</div>
+`;
+});
+}
+
+displayResources(resources);
+
+function uploadResource(){
+let name=document.getElementById("resourceName").value;
+let subject=document.getElementById("subject").value;
+let year=document.getElementById("year").value;
+let branch=document.getElementById("branch").value;
+let type=document.getElementById("type").value;
+
+if(!name||!subject){
+alert("Fill all details");
+return;
+}
+
+resources.unshift({name,subject,year,branch,type});
+displayResources(resources);
+
+points+=10;
+document.getElementById("points").innerText=points;
+document.getElementById("pointsDisplay").innerText=points;
+
+closeModal();
+}
+
+function searchResources(){
+let val=document.getElementById("searchInput").value.toLowerCase();
+let filtered=resources.filter(r=>r.name.toLowerCase().includes(val)||r.subject.toLowerCase().includes(val));
+displayResources(filtered);
+}
+
+function filterResources(){
+let year=document.getElementById("filterYear").value;
+let branch=document.getElementById("filterBranch").value;
+
+let filtered=resources.filter(r=>
+(year==="All"||r.year===year)&&
+(branch==="All"||r.branch===branch)
+);
+
+displayResources(filtered);
+}
+
+function postDoubt(){
+let q=document.getElementById("doubtQuestion").value;
+if(!q)return;
+
+document.getElementById("doubtContainer").innerHTML=`
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border fade-in">
+<p class="font-semibold">❓ ${q}</p>
+<p class="text-green-500 text-sm mt-2">Awaiting Answers...</p>
+</div>
+` + document.getElementById("doubtContainer").innerHTML;
+
+document.getElementById("doubtQuestion").value="";
+}
+
+function toggleTheme(){
+document.documentElement.classList.toggle("dark");
+document.getElementById("themeIcon").innerText =
+document.documentElement.classList.contains("dark") ? "☀️" : "🌙";
+}
+
+function openModal(){
+document.getElementById("modal").classList.remove("hidden");
+}
+
+function closeModal(){
+document.getElementById("modal").classList.add("hidden");
+}
+
+</script>
+
+</body>
+</html>
