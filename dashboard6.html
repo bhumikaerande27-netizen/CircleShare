@@ -247,6 +247,22 @@ Post Doubt
 <option>Reference Book</option>
 </select>
 
+<!-- FILE INPUT -->
+
+<div class="mb-4">
+
+<label class="block mb-2 font-semibold">
+Upload Document
+</label>
+
+<input 
+type="file" id="resourceFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg" class="w-full p-3 rounded-xl border bg-white dark:bg-slate-900"/>
+<p class="text-xs text-slate-500 mt-2">
+Supported: PDF, DOCX, PPT, Images
+</p>
+
+</div>
+
 <button onclick="uploadResource()" class="w-full bg-brand-600 text-white py-3 rounded-xl">
 Upload
 </button>
@@ -262,24 +278,27 @@ Cancel
 
 let points = 620;
 
-let resources = [
-{name:"DBMS Notes",subject:"DBMS",year:"3rd Year",branch:"CSE",type:"Notes"},
-{name:"Machine Learning PYQ",subject:"ML",year:"3rd Year",branch:"AIML",type:"PYQ"},
-{name:"OS Reference Book",subject:"Operating System",year:"2nd Year",branch:"CSE",type:"Reference Book"}
-];
+let resources = [];
 
 function displayResources(list){
 let container=document.getElementById("resourceContainer");
 container.innerHTML="";
 document.getElementById("resourceCount").innerText=list.length+" Resources";
 
-list.forEach(r=>{
+list.forEach((r)=>{
 container.innerHTML+=`
 <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border fade-in hover:shadow-lg transition">
 <h3 class="font-bold text-lg">${r.name}</h3>
 <p class="text-slate-500">${r.subject}</p>
 <p class="text-sm mt-1">${r.year} • ${r.branch}</p>
 <span class="inline-block mt-2 px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-sm">${r.type}</span>
+<div class="mt-4 p-4 rounded-xl bg-slate-100 dark:bg-slate-800">
+<p class="truncate text-sm font-medium">${r.fileName}</p>
+<div class="grid grid-cols-2 gap-3 mt-4">
+<a href="${r.fileURL}" target="_blank" class="bg-brand-600 hover:bg-brand-700 text-white py-2 rounded-lg text-center">Preview</a>
+<a href="${r.fileURL}" download class="border border-brand-600 text-brand-600 py-2 rounded-lg text-center">Download</a>
+</div>
+</div>
 </div>
 `;
 });
@@ -287,26 +306,109 @@ container.innerHTML+=`
 
 displayResources(resources);
 
-function uploadResource(){
+async function uploadResource(){
+
 let name=document.getElementById("resourceName").value;
+
 let subject=document.getElementById("subject").value;
+
 let year=document.getElementById("year").value;
+
 let branch=document.getElementById("branch").value;
+
 let type=document.getElementById("type").value;
 
-if(!name||!subject){
-alert("Fill all details");
+let file=document.getElementById("resourceFile").files[0];
+
+if(!name || !subject || !file){
+
+alert("Please fill all details");
+
 return;
+
 }
 
-resources.unshift({name,subject,year,branch,type});
-displayResources(resources);
+try{
 
-points+=10;
-document.getElementById("points").innerText=points;
-document.getElementById("pointsDisplay").innerText=points;
+let btn = event.target;
 
+btn.innerText="Uploading...";
+
+btn.disabled=true;
+
+/* CREATE FORM DATA */
+
+const formData = new FormData();
+
+/* APPEND FILE */
+
+formData.append("file",file);
+
+/* CLOUDINARY PRESET */
+
+formData.append(
+"upload_preset",
+"CircleShare_upload"
+);
+
+/* SEND FILE TO CLOUDINARY */
+
+const response = await fetch(
+
+"https://api.cloudinary.com/v1_1/dkfdi3kus/auto/upload",
+
+{
+method:"POST",
+body:formData
+}
+);
+
+/* GET RESPONSE */
+
+const data = await response.json();
+
+/* FILE URL */
+
+const fileURL = data.secure_url;
+
+/* SAVE TO FIRESTORE */
+
+await addDoc(
+collection(db,"resources"),
+{
+
+name,
+subject,
+year,
+branch,
+type,
+
+fileName:file.name,
+
+fileURL:fileURL,
+
+createdAt:Date.now()
+
+}
+);
+
+/* RELOAD DATA */
+loadResources();
+alert("Resource Uploaded 🚀");
+
+/* RESET FORM */
+document.getElementById("resourceName").value="";
+document.getElementById("subject").value="";
+document.getElementById("resourceFile").value="";
 closeModal();
+
+/* BUTTON RESET */
+btn.innerText="Upload";
+btn.disabled=false;
+}catch(err){
+console.error(err);
+alert("Upload Failed");
+}
 }
 
 function searchResources(){
@@ -354,6 +456,90 @@ document.getElementById("modal").classList.remove("hidden");
 function closeModal(){
 document.getElementById("modal").classList.add("hidden");
 }
+
+async function loadResources(){
+const q = query(
+collection(db,"resources"),
+orderBy("createdAt","desc")
+);
+const snapshot = await getDocs(q);
+resources = [];
+snapshot.forEach((doc)=>{
+resources.push(doc.data());
+});
+displayResources(resources);
+}
+
+/* INITIAL LOAD */
+
+setTimeout(()=>{
+loadResources();
+},1000);
+
+</script>
+
+<script type="module">
+
+/* FIREBASE APP */
+
+import { initializeApp }
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+/* FIRESTORE */
+
+import {
+
+getFirestore,
+
+collection,
+
+addDoc,
+
+getDocs,
+
+query,
+
+orderBy
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* YOUR FIREBASE CONFIG */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAjkst7jRpOFUguAPb856TcJD88Zsk23Us",
+  authDomain: "circleshare-6bd41.firebaseapp.com",
+  databaseURL: "https://circleshare-6bd41-default-rtdb.firebaseio.com",
+  projectId: "circleshare-6bd41",
+  storageBucket: "circleshare-6bd41.firebasestorage.app",
+  messagingSenderId: "182780059158",
+  appId: "1:182780059158:web:ca3aa6db6b07d77e039f37"
+};
+
+
+/* INITIALIZE FIREBASE */
+
+const app = initializeApp(firebaseConfig);
+
+/* CONNECT FIRESTORE */
+
+const db = getFirestore(app);
+
+/* MAKE FIREBASE FUNCTIONS GLOBAL */
+
+window.db = db;
+
+window.collection = collection;
+
+window.addDoc = addDoc;
+
+window.getDocs = getDocs;
+
+window.query = query;
+
+window.orderBy = orderBy;
 
 </script>
 
