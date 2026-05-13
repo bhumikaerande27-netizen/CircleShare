@@ -87,4 +87,3 @@ CircleShare is a web platform designed to eliminate the struggle of finding real
 - live previews
 - Leaderboard
 - Download 
-- 
