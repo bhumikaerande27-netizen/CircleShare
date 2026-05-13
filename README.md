@@ -82,8 +82,9 @@ CircleShare is a web platform designed to eliminate the struggle of finding real
 ## Features
 
 - Light/Dark Mode 
-- Live Previews
-- Download
 - Quality Ranking System
-- Resposive Interphase 
+- Resposive Interphase
+- live previews
 - Leaderboard
+- Download 
+- 
